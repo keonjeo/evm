@@ -1,0 +1,196 @@
+#!/usr/bin/env bash
+
+evm_error() {
+	tput sgr0
+	tput setaf 1 # Red color
+    echo "[ERROR] $1" >&2
+	tput sgr0
+}
+
+evm_warn() {
+	tput sgr0
+	tput setaf 3 # Yellow color
+    echo "[WARN] $1" >&1
+	tput sgr0
+}
+
+evm_info() {
+	tput sgr0
+	tput setaf 2 # Green color
+    echo "[INFO] $1" >&1
+	tput sgr0
+}
+
+evm_dev_info() {
+	tput sgr0
+	tput setaf 2 # Green color
+    if [[ -n $EVM_DEV ]]; then
+        echo "[INFO] $(date +'%Y-%m-%dT%H:%M:%S%z'): $@" >&1
+    else
+        echo "[INFO] $(date +'%Y-%m-%dT%H:%M:%S%z'): $@" > /dev/null
+    fi
+	tput sgr0
+}
+
+evm_echo() {
+    tput sgr0
+	tput setaf 4 # Blue color
+    echo "$1" >&1
+	tput sgr0
+}
+
+evm_success_echo() {
+    tput sgr0
+    tput setaf 5
+    echo "$1" >&1
+    tput sgr0
+}
+
+evm_message() {
+    tput sgr0
+    tput setaf 2 # Green color
+    echo "$1" >&1
+    tput sgr0
+}
+
+update_profile() {
+	[ -f "$1" ] || return 1
+
+	grep -F "$source_line" "$1" > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		echo -e "\n$source_line" >> "$1"
+	fi
+}
+
+welcome_to_evm() {
+    EVM_VERSION="1.0.0"
+    v1=${EVM_VERSION}
+    evm_echo "#####################################################################"
+    evm_echo "#                                                                   #"
+    evm_echo "#    Congratulations! evm v${v1} has been installed successfully.   #"
+    evm_echo "#      Welcome to use evm tool to manage your erlang versions!      #"
+    evm_echo "#                                                                   #"
+    evm_echo "#####################################################################"
+
+    cat << "EOF"
+                                   ____   
+       ,---,.                    ,'  , `. 
+     ,'  .' |       ,---.     ,-+-,.' _ | 
+   ,---.'   |      /__./|  ,-+-. ;   , || 
+   |   |   .' ,---.;  ; | ,--.'|'   |  ;| 
+   :   :  |-,/___/ \  | ||   |  ,', |  ': 
+   :   |  ;/|\   ;  \ ' ||   | /  | |  || 
+   |   :   .' \   \  \: |'   | :  | :  |, 
+   |   |  |-,  ;   \  ' .;   . |  ; |--'  
+   '   :  ;/|   \   \   '|   : |  | ,     
+   |   |    \    \   `  ;|   : '  |/      
+   |   :   .'     :   \ |;   | |`-'       
+   |   | ,'        '---" |   ;/     by keonjeo  
+   `----'                '---'
+EOF
+}
+
+BRANCH=${1:-master}
+EVM_DEST=${2:-$HOME}
+EVM_NAME="evm"
+SRC_REPO=${SRC_REPO:-https://github.com/keonjeo/evm.git}
+ERLANG_INSTALL_DIRS="erlang_tars erlang_versions evm_config"
+
+[ "$EVM_DEST" = "$HOME" ] && EVM_NAME=".evm"
+[ -d "$EVM_DEST/$EVM_NAME" ] && evm_warn \
+    "Already installed! Remove old installation by running the following command:
+    rm -rf $EVM_DEST/$EVM_NAME
+"
+
+[ -d "$EVM_DEST" ] || mkdir -p "$EVM_DEST" > /dev/null 2>&1 || evm_error "Failed to create $EVM_DEST"
+[ -z "$(which git)" ] && evm_error "Sorry guys. I can't find your git tool in your system.
+        Debian / Ubuntu : sudo apt-get install git
+        Redhat / Centos : sudo yum install git
+                Mac OSX : sudo brew install git
+"
+
+[ -z "$(which wget)" ] && evm_error "Sorry guys. I can't find your wget tool in your system.
+        Debian / Ubuntu : sudo apt-get install wget
+        Redhat / Centos : sudo yum install wget
+                Mac OSX : sudo brew install wget
+"
+
+GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+
+if [[ -z "$GIT_ROOT" || "$(basename "$GIT_ROOT")" != "evm" ]];then
+    echo "Cloning from $SRC_REPO to $EVM_DEST/$EVM_NAME"
+
+    git clone --quiet "$SRC_REPO" "$EVM_DEST/$EVM_NAME" 2> /dev/null ||
+        evm_error "Failed to clone from $SRC_REPO into $EVM_DEST/$EVM_NAME"
+else
+    # Generally speaking, it is impossible for users to reach this branch.
+    # For developer to execute evm-installer script on the local.
+    evm_dev_info "==============================="
+    evm_dev_info "EVM_DEST => $EVM_DEST"
+    evm_dev_info "GIT_ROOT  => $GIT_ROOT"
+    evm_dev_info "==============================="
+    if [[ $EVM_DEST == *"$GIT_ROOT"* ]]; then # means that you want to install evm tool into GIT_ROOT directory
+        ln -s "$GIT_ROOT" "$EVM_DEST"
+    else
+        cp -r "$GIT_ROOT" "$EVM_DEST/$EVM_NAME"
+    fi
+fi
+
+pushd . > /dev/null
+cd "$EVM_DEST/$EVM_NAME" && git checkout --quiet "$BRANCH" 2> /dev/null
+[[ $? -ne 0 ]] && evm_error "Failed to checkout $BRANCH branch" && exit 1
+popd > /dev/null
+
+# backup .git directory if exosts .git directory
+[ -d "$EVM_DEST/$EVM_NAME/.git" ] && mv "$EVM_DEST/$EVM_NAME/.git" "$EVM_DEST/$EVM_NAME/git.bak"
+
+# Create some directories for EVM_HOME
+for dir in $ERLANG_INSTALL_DIRS
+do
+  [[ -d $EVM_DEST/$EVM_NAME/$dir ]] && rm -rf $EVM_DEST/$EVM_NAME/$dir
+  mkdir -p $EVM_DEST/$EVM_NAME/$dir
+  evm_dev_info "$EVM_DEST/$EVM_NAME/$dir successfully created"
+done
+
+# Create the configuration file for EVM_HOME
+[[ -f$EVM_DEST/$EVM_NAME/evm_config/erlang_default ]] && rm -f $EVM_DEST/$EVM_NAME/evm_config/erlang_default
+touch $EVM_DEST/$EVM_NAME/evm_config/erlang_default
+evm_dev_info "$EVM_DEST/$EVM_NAME/evm_config/erlang_default succesfully created"
+
+source_line="[[ -s \"${EVM_DEST}/$EVM_NAME/scripts/evm\" ]] && source \"${EVM_DEST}/$EVM_NAME/scripts/evm\""
+source_file="${EVM_DEST}/$EVM_NAME/scripts/evm"
+
+if [ -z "$EVM_NO_UPDATE_PROFILE" ]; then
+    if [ -n "$ZSH_NAME" ]; then
+        update_profile "$HOME/.zshrc"
+    elif [ "$(uname)" == "Linux" ]; then
+        update_profile "$HOME/.bashrc" || update_profile "$HOME/.bash_profile"
+    elif [ "$(uname)" == "Darwin" ]; then
+        update_profile "$HOME/.profile" || update_profile "$HOME/.bash_profile"
+    fi
+fi
+
+if [ -z "$EVM_NO_UPDATE_PROFILE" ] && [ "$?" != "0" ]; then
+	evm_warn "Unable to locate profile settings file (Something like $HOME/.bashrc or $HOME/.bash_profile)"
+	evm_warn ""
+	evm_warn " You will have to manually add the following line:"
+	evm_warn ""
+	evm_warn "  $source_line"
+	evm_warn ""
+fi
+
+echo "#!/usr/bin/env bash\n" > "$EVM_DEST/$EVM_NAME/scripts/evm"
+echo "export EVM_ROOT=$EVM_DEST/$EVM_NAME" >> "$EVM_DEST/$EVM_NAME/scripts/evm"
+echo "export EVM_ROOT_BACKUP=$EVM_DEST/$EVM_NAME.back" >> "$EVM_DEST/$EVM_NAME/scripts/evm"
+echo ". \$EVM_ROOT/scripts/evm_default" >> "$EVM_DEST/$EVM_NAME/scripts/evm"
+
+[[ -s "$EVM_DEST/$EVM_NAME/scripts/evm" ]] && source "$EVM_DEST/$EVM_NAME/scripts/evm"
+
+welcome_to_evm
+
+evm_success_echo ""
+evm_success_echo ""
+evm_success_echo "Please restart your terminal session, or to get started execute the following command to make it effective."
+evm_success_echo ""
+evm_success_echo "  \`source ${source_file}\`  "
+evm_success_echo ""

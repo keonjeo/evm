@@ -1,0 +1,5 @@
+[[ ! -d $EVM_ROOT/logs ]] && mkdir -p $EVM_ROOT/logs > /dev/null 2>&1
+
+export EVM_VERSION=$(cat "$EVM_ROOT/VERSION")
+
+. "$EVM_ROOT/scripts/env/evm"

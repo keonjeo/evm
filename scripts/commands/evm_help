@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+. "$EVM_ROOT/scripts/load_functions" || return 1
+
+function evm_help() {
+    evm_echo "Usage: evm [command]
+    Description:
+    EVM is the Erlang Version Manager.
+
+    Commands:
+    version    - print the evm version number
+    help       - display this usage text
+    implode    - completely remove evm
+"
+}

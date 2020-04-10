@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+evm_fatal() {
+	tput sgr0
+	tput setaf 1 # Red color
+    echo "[ERROR] $1" >&2
+	tput sgr0
+	exit 1
+}
+
+evm_error() {
+	tput sgr0
+	tput setaf 1 # Red color
+    echo "[ERROR] $1" >&2
+	tput sgr0
+}
+
+evm_warn() {
+	tput sgr0
+	tput setaf 3 # Yellow color
+    echo "[WARN] $1" >&1
+	tput sgr0
+}
+
+evm_info() {
+	tput sgr0
+	tput setaf 2 # Green color
+    echo "[INFO] $1" >&1
+	tput sgr0
+}
+
+evm_dev_info() {
+	tput sgr0
+	tput setaf 2 # Green color
+    if [[ -n $EVM_DEV ]]; then
+        echo "[INFO] $(date +'%Y-%m-%dT%H:%M:%S%z'): $@" >&1
+    else
+        echo "[INFO] $(date +'%Y-%m-%dT%H:%M:%S%z'): $@" > /dev/null
+    fi
+	tput sgr0
+}
+
+evm_echo() {
+    tput sgr0
+	tput setaf 4 # Blue color
+    echo "$1" >&1
+	tput sgr0
+}
+
+evm_success_echo() {
+    tput sgr0
+    tput setaf 5
+    echo "$1" >&1
+    tput sgr0
+}
+
+evm_message() {
+    tput sgr0
+    tput setaf 2 # Green color
+    echo "$1" >&1
+    tput sgr0
+}

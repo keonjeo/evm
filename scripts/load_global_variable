@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+local global_variable_file = "$EVM_ROOT/scripts/global_variable" 
+. $global_variable_file

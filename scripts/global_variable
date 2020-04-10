@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Read the page http://www.erlang.org and catch
+# all available erlang versions to download, including minor releases
+ERLANG_ORG="http://www.erlang.org/download/"
+ERLANG_URL="https://github.com"
+FILE_PATH="/erlang/otp/archive/OTP-"
+FILE_EXTENSION=".zip"
+FILE_PREFIX="OTP-"
+FOLDER_PREFIX="otp_src_"
+EVM_HOME=$HOME"/.evm"
+DEFAULT_TAR_LOCATION=$EVM_HOME"/erlang_tars/"
+DEFAULT_INSTALL_LOCATION=$EVM_HOME"/erlang_versions/"

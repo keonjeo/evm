@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# Removes 'OTP_' from the parameter
+function strip_version() {
+  sed 's/OTP_//' <<< $1
+}

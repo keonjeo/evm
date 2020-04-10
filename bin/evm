@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+if [ -z "$EVM_ROOT" ]; then
+    evm_error 'ERROR: EVM_ROOT is not set! Please add the following line to your .bashrc or .profile
+    [[ -s "$HOME/.evm/scripts/evm" ]] && source "$HOME/.evm/scripts/evm"
+    '
+fi
+
+. "$EVM_ROOT/scripts/load_commands" || return 1
+
+command=$1
+
+# # Check the prerequisites for the evm installation
+# "$EVM_ROOT/scripts/evm_check"
+
+# if [[ "$?" != "0" ]]; then
+#   evm_fatal "Missing requirements."
+# fi
+
+if [[ -z $command ]]; then
+    evm_help
+elif [ -f "$EVM_ROOT/scripts/commands/evm_$command" ]; then
+    evm_$command $@
+else
+    evm_error "Unrecognized command line argument: '$command'"
+fi

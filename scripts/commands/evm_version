@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+. "$EVM_ROOT/scripts/load_functions" || exit 1
+
+evm_version() {
+	evm_message "Erlang Version Manager v$EVM_VERSION installed at $EVM_ROOT"
+}
