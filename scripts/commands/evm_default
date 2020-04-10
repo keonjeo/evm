@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# set this erlang version as system default.
+# @params: erlang_version, e.g. 22.3.2
+evm_default() {
+    local VERSION=$1
+
+    if [[ -d $ERLANG_VERSIONS_LOCATION/$VERSION ]]; then
+        [[ -d $EVM_HOME/evm_config/erlang_default ]] && (evm_error "
+        Sorry! Something goes wrong here.
+        Counld not find $EVM_HOME/evm_config/erlang_default file in your system.
+        " && return 1)
+
+        [[ -d $EVM_HOME/evm_config/erlang_default ]] && echo "$VERSION" > $EVM_HOME/evm_config/erlang_default
+        evm_dev_info "=== evm_use $VERSION ==="
+        evm_use $VERSION
+    else
+        evm_error "
+        $VERSION is not installed yet.
+
+        Use 'evm install $VERSION' to install it
+        "
+        return 1
+    fi
+}

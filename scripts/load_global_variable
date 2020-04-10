@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+. $EVM_ROOT/scripts/global_variable

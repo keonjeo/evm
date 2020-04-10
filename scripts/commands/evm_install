@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+
+unzip_erlang_version_zip_file() {
+    local ERLANG_VERSION_ZIP_FILE=$FILE_PREFIX-$VERSION.$FILE_EXTENSION
+    cd $ERLANG_INSTALL_DIR
+    evm_dev_info "current path: `pwd`"
+
+    evm_message "unzipping... $ERLANG_TARS_LOCATION/$ERLANG_VERSION_ZIP_FILE"
+    evm_dev_info "unzip -q $ERLANG_TARS_LOCATION/$ERLANG_VERSION_ZIP_FILE -d $ERLANG_INSTALL_DIR"
+    unzip -q $ERLANG_TARS_LOCATION/$ERLANG_VERSION_ZIP_FILE -d $ERLANG_INSTALL_DIR
+    cd -
+    return 0
+}
+
+configure_erlang_source_code() {
+    if [ $(ls -1 $ERLANG_INSTALL_DIR | wc -l) -gt 1 ]; then
+        cd $ERLANG_INSTALL_DIR
+    else
+        cd $ERLANG_INSTALL_DIR/* # enter into the new subdirectory ( otp sub-directory )
+    fi
+
+    evm_dev_info "current path: `pwd`"
+
+    evm_message "Configuring... $ERLANG_INSTALL_DIR"
+    # Start to autoconf the erlang source code, and then make it and install it.
+    chmod +X otp_build
+    ./otp_build autoconf
+    ./configure --prefix="$ERLANG_INSTALL_DIR" --without-javac
+    cd -
+    return 0
+}
+
+do_you_want_to_continue_to_install() {
+    local cont="y"
+    [[ "$DONT_ASK" != "Y" && "$DONT_ASK" != "y" ]] && echo "" && evm_message "Continue with installation?(y/n)" && read cont
+
+    if [[ "$cont" != "Y" && "$cont" != "y" ]]; then
+        evm_message "Erlang v$1 installation has been Cancelled"
+        rm -rf $ERLANG_INSTALL_DIR
+        exit 0
+    fi
+    return 0
+}
+
+complie_source_code_and_install_erlang() {
+    local ERLANG_VERSION_ZIP_FILE=$FILE_PREFIX-$VERSION.$FILE_EXTENSION
+    if [ $(ls -1 $ERLANG_INSTALL_DIR | wc -l) -gt 1 ]; then
+        cd $ERLANG_INSTALL_DIR
+    else
+        cd $ERLANG_INSTALL_DIR/* # enter into the new subdirectory ( otp sub-directory )
+    fi
+
+    evm_dev_info "current path: `pwd`"
+
+    evm_message "Compiling and installing $1"
+
+    export MAKEFLAGS=-j8
+    make && make install 
+    # make && make install 1> "/tmp/install_erlang_$VERSION.log" 2>&1
+
+    [[ $? != 0 ]] && evm_error "Fail to compile the erlang source code." && exit 1
+
+    [[ ! -n "$EVM_DEV" ]] && rm -rf $ERLANG_TARS_LOCATION/$ERLANG_VERSION_ZIP_FILE
+    cd -
+    return 0
+}
+
+create_lib_links_into_erlang_bin_path() {
+    cd "$ERLANG_INSTALL_DIR/lib"
+    evm_dev_info "current path: `pwd`"
+
+    evm_message "Add links to path..."
+    # Escape "erlang/bin" and "erlang/erts" because that's already in the right place
+    for d in $(find . -type d -name "bin" | grep -v "erlang/bin" | grep -v "erlang/erts"); do
+        cd $d
+        for f in *; do
+            evm_message "Adding $d/$f to $ERLANG_INSTALL_DIR/bin..."
+            evm_dev_info "ln -s $ERLANG_INSTALL_DIR/lib/$d/$f $ERLANG_INSTALL_DIR/bin"
+            ln -s $ERLANG_INSTALL_DIR/lib/$d/$f $ERLANG_INSTALL_DIR/bin
+        done
+        cd -
+    done
+    cd -
+    return 0
+}
+
+check_if_version_installed() {
+    # Install the version if not installed yet
+    [[ -d "$ERLANG_VERSIONS_LOCATION/$VERSION" ]] && evm_message "
+    Erlang v$1 - This version is already installed at $ERLANG_VERSIONS_LOCATION
+    
+    Try to execute 'evm uninstall $1' and then execute 'evm install $1' again
+    " && exit 0
+}
+
+evm_install() {
+    evm_dev_info "\$@: $@, count: $#"
+
+    if [[ $# -eq 0 ]]; then
+        evm_message "evm install usage:
+
+        evm install erlang_version
+
+        for example:  evm install 22.3.2
+        "
+        exit 1
+    fi
+
+    local VERSION="$1"
+
+    evm_download $VERSION
+
+    check_if_version_installed
+
+    ERLANG_INSTALL_DIR="$ERLANG_VERSIONS_LOCATION/$VERSION"
+    [[ ! -d $ERLANG_INSTALL_DIR ]] && mkdir -p $ERLANG_INSTALL_DIR > /dev/null 2>&1
+
+    unzip_erlang_version_zip_file
+
+    [[ -z $NOT_CONFIGURE_ERLANG_SOURCE_CODE ]] && configure_erlang_source_code
+
+    do_you_want_to_continue_to_install
+
+    [[ -z $NOT_COMPLIE_SOURCE_CODE ]] && (complie_source_code_and_install_erlang || evm_error "Fail to complie source code" && exit 1)
+    [[ -z $NOT_COMPLIE_SOURCE_CODE ]] && (create_lib_links_into_erlang_bin_path || evm_error "Fail to create lib links" && exit 1)
+
+    # Just only for development for evm project
+    if [[ -n $NOT_COMPLIE_SOURCE_CODE ]]; then
+        [[ ! -d ~/.evm_erlang_versions.back ]] && evm_error "~/.evm_erlang_versions.back does NOT exist on your home directory." && exit 1
+        [[ -d ~/.evm/erlang_versions ]] && evm_dev_info "trying to remove ~/.evm/erlang_versions directory" && rm -rf ~/.evm/erlang_versions
+        evm_dev_info "copy ~/.evm_erlang_versions.back directory to ~/.evm/erlang_versions directory" && cp -rp ~/.evm_erlang_versions.back ~/.evm/erlang_versions
+    fi
+
+    evm_message ""
+    evm_message "Congratulations. Installation is Done!"
+    evm_message "Use 'evm default $1' to set this version as default or 'evm use $1' to start using this version right now"
+    evm_message ""
+}

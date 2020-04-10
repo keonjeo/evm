@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+evm_implode() {
+	evm_message "+---------------------------------------------------------------+"
+	evm_message "|        You want to remove the evm tool on the system.         |"
+	evm_message "+---------------------------------------------------------------+"
+	echo ""
+	echo -n "Are you sure? [Y/n] "
+	read reply
+	echo ""
+
+	if [[ ! $reply =~ ^[Yy]$ ]]; then
+		evm_message "Action cancelled"
+	else
+		evm_reinstall_tip
+		backup_evm_root_directory
+		remove_evm_root_directory
+		if [[ $? == 1 ]]; then
+			evm_dev_info "Fail to remove evm_root directory"
+			evm_warn "Failed to uninstall EVM!"
+			recovery_evm_root_directory
+		else
+			evm_dev_info "Remove evm_root directory successfully!"
+			evm_message "EVM has been removed successfully!"
+		fi
+	fi
+}
+
+evm_reinstall_tip() {
+	evm_dev_info "evm_reinstall_tip"
+	[[ -s "$EVM_ROOT/scripts/check_evm_directory" ]] && source "$EVM_ROOT/scripts/check_evm_directory"
+}
+
+backup_evm_root_directory() {
+	evm_dev_info "backup_evm_root_directory"
+	[[ -s $EVM_ROOT_BACKUP ]] && rm -rf $EVM_ROOT_BACKUP
+	cp -rp $EVM_ROOT $EVM_ROOT_BACKUP
+}
+
+remove_evm_root_directory() {
+	rm -rf "$EVM_ROOT"
+}
+
+recovery_evm_root_directory() {
+	evm_dev_info "recovery_evm_root_directory"
+	[[ ! -d $EVM_ROOT_BACKUP ]] && evm_warn "$EVM_ROOT_BACKUP does NOT exist on the system."
+	[[ -d $EVM_ROOT_BACKUP ]] && cp -rp $EVM_ROOT_BACKUP $EVM_ROOT
+	reload_evm
+}
+
+reload_evm() {
+	evm_dev_info "reload_evm"
+	[[ -s "$EVM_ROOT/scripts/evm" ]] && source "$EVM_ROOT/scripts/evm"
+}

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# _load function rename _load_erland_default function
+function _load_erland_default() {
+    [[ ! -f "$EVM_HOME/evm_config/erlang_default" ]] && return 0
+
+    default="$(cat "$EVM_HOME/evm_config/erlang_default")"
+    local VER="$(strip_version $default)"
+    export PATH="$ERLANG_VERSIONS_LOCATION$FOLDER_PREFIX$VER/bin:$PATH"
+}

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# set this erlang version to be the one available in the PATH
+# @params: erlang_version, e.g. 22.3.2
+evm_use() {
+    local ERLANG_VERSION=$1
+
+    if [[ -d $ERLANG_VERSIONS_LOCATION/$ERLANG_VERSION ]]; then
+        for directory in $ERLANG_VERSIONS_LOCATION/*; do
+            evm_dev_info "--------------------------"
+            evm_dev_info "directory => $directory"
+            evm_dev_info "--------------------------"
+            PATH="$(echo $PATH | sed -e "s,$directory/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
+        done
+        export PATH="$PATH:$ERLANG_VERSIONS_LOCATION/$ERLANG_VERSION/bin"
+        evm_dev_info "PATH => $PATH"
+    else
+        evm_warn "
+
+Erlang Version $ERLANG_VERSION has not been installed in $ERLANG_VERSIONS_LOCATION/$ERLANG_VERSION.
+Use 'evm install $ERLANG_VERSION' to install it.
+        "
+        return 1
+    fi
+}

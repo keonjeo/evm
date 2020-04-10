@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+function evm_help() {
+    evm_echo "
+
+Usage: evm [command]
+
+    Description:
+    EVM is the Erlang Version Manager.
+
+    Commands:
+    version    - print the evm version number
+    help       - display this usage text
+    listall    - list available versions
+    install    - install erlang version
+    uninstall  - uninstall erlang version
+    list       - list installed erlang versions
+    use        - select a erlang version to use (--default to set permanently)
+    implode    - completely remove evm
+"
+}

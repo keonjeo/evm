@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# uninstall the erlang version from system
+evm_uninstall() {
+    local VERSION=$1
+    [[ ! -d $ERLANG_VERSIONS_LOCATION/$VERSION ]] && (evm_error "Erlang version $VERSION has not been installed." && return 1) 
+
+    evm_message "Uninstalling $VERSION..."
+    rm -rf $ERLANG_VERSIONS_LOCATION/$VERSION
+    evm_message "Erlang version $VERSION has been uninstalled successfully"
+}
