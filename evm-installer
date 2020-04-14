@@ -146,15 +146,14 @@ popd > /dev/null
 [ -d "$EVM_DEST/$EVM_NAME/.git" ] && mv "$EVM_DEST/$EVM_NAME/.git" "$EVM_DEST/$EVM_NAME/git.bak"
 
 # Create some directories for EVM_HOME
-for dir in $EVM_EXTRA_DIRS
-do
-  [[ -d $EVM_DEST/$EVM_NAME/$dir ]] && rm -rf $EVM_DEST/$EVM_NAME/$dir
-  mkdir -p $EVM_DEST/$EVM_NAME/$dir
-  evm_dev_info "$EVM_DEST/$EVM_NAME/$dir successfully created"
+for directory in $EVM_EXTRA_DIRS; do
+  [[ -d $EVM_DEST/$EVM_NAME/$directory ]] && rm -rf $EVM_DEST/$EVM_NAME/$directory
+  mkdir -p $EVM_DEST/$EVM_NAME/$directory
+  evm_dev_info "$EVM_DEST/$EVM_NAME/$directory successfully created"
 done
 
 # Create the configuration file for EVM_HOME
-[[ -f$EVM_DEST/$EVM_NAME/evm_config/erlang_default ]] && rm -f $EVM_DEST/$EVM_NAME/evm_config/erlang_default
+[[ -f $EVM_DEST/$EVM_NAME/evm_config/erlang_default ]] && rm -f $EVM_DEST/$EVM_NAME/evm_config/erlang_default
 touch $EVM_DEST/$EVM_NAME/evm_config/erlang_default
 evm_dev_info "$EVM_DEST/$EVM_NAME/evm_config/erlang_default succesfully created"
 
