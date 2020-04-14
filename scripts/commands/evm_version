@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+evm_version() {
+	evm_message "EVM v$EVM_VERSION has been installed at $EVM_ROOT"
+}

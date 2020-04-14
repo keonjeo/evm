@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+. "$EVM_ROOT/scripts/load_functions" || return 1
+
+evm() {
+	if [[ "$EVM_ROOT" == "" ]]; then
+		evm_error "EVM_ROOT not set. Please source \$EVM_ROOT/scripts/evm"
+		return $?
+	fi
+
+	if [[ -d $EVM_ROOT/.git ]]; then
+		mv "$EVM_ROOT/.git" "$EVM_ROOT/git.bak" ||
+			evm_error "Failed to move git info out of the way"
+	fi
+
+	if [[ ! -d $EVM_ROOT ]]; then
+		evm_error "EVM_ROOT does not exist, please reinstall evm!"
+		return $?
+	fi
+
+	[[ ! -d $EVM_ROOT/logs ]] && mkdir -p "$EVM_ROOT/logs" > /dev/null 2>&1
+
+	$EVM_ROOT/bin/evm $@
+}
