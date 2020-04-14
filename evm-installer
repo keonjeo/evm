@@ -94,11 +94,9 @@ BRANCH=${1:-master}
 EVM_DEST=${2:-$HOME}
 EVM_NAME="evm"
 SRC_REPO=${SRC_REPO:-https://github.com/keonjeo/evm.git}
-EVM_EXTRA_DIRS="erlang_tars erlang_versions evm_config"
 
 [[ "$EVM_DEST" = "$HOME" ]] && EVM_NAME=".evm"
-[[ -d "$EVM_DEST/$EVM_NAME" ]] && evm_warn "
-Already installed! Remove old installation by running the following command:
+[[ -d "$EVM_DEST/$EVM_NAME" ]] && evm_warn "Already installed! Remove old installation by running the following command:
 
     rm -rf $EVM_DEST/$EVM_NAME"
 
@@ -147,11 +145,9 @@ popd > /dev/null
 [ -d "$EVM_DEST/$EVM_NAME/.git" ] && mv "$EVM_DEST/$EVM_NAME/.git" "$EVM_DEST/$EVM_NAME/git.bak"
 
 # Create some directories for EVM_HOME
-for directory in $EVM_EXTRA_DIRS; do
-  [[ -d $EVM_DEST/$EVM_NAME/$directory ]] && rm -rf $EVM_DEST/$EVM_NAME/$directory
-  mkdir -p $EVM_DEST/$EVM_NAME/$directory
-  evm_dev_info "$EVM_DEST/$EVM_NAME/$directory successfully created"
-done
+[[ ! -d $EVM_DEST/$EVM_NAME/erlang_tars ]] && mkdir -p $EVM_DEST/$EVM_NAME/erlang_tars
+[[ ! -d $EVM_DEST/$EVM_NAME/erlang_versions ]] && mkdir -p $EVM_DEST/$EVM_NAME/erlang_versions
+[[ ! -d $EVM_DEST/$EVM_NAME/evm_config ]] && mkdir -p $EVM_DEST/$EVM_NAME/evm_config
 
 # Create the configuration file for EVM_HOME
 [[ -f $EVM_DEST/$EVM_NAME/evm_config/erlang_default ]] && rm -f $EVM_DEST/$EVM_NAME/evm_config/erlang_default
