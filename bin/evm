@@ -21,7 +21,7 @@ fi
 # fi
 
 command="$1"
-[[ -z $command ]] && evm_help
+[[ -z $command ]] && (evm_help && exit 0)
 
 check_command_if_need_to_pass_parameter() {
     case $command in
