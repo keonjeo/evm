@@ -96,12 +96,13 @@ EVM_NAME="evm"
 SRC_REPO=${SRC_REPO:-https://github.com/keonjeo/evm.git}
 EVM_EXTRA_DIRS="erlang_tars erlang_versions evm_config"
 
-[ "$EVM_DEST" = "$HOME" ] && EVM_NAME=".evm"
-[ -d "$EVM_DEST/$EVM_NAME" ] && (evm_warn "
+[[ "$EVM_DEST" = "$HOME" ]] && EVM_NAME=".evm"
+[[ -d "$EVM_DEST/$EVM_NAME" ]] && evm_warn "
 Already installed! Remove old installation by running the following command:
 
-    rm -rf $EVM_DEST/$EVM_NAME
-" && exit 1)
+    rm -rf $EVM_DEST/$EVM_NAME"
+
+[[ -d "$EVM_DEST/$EVM_NAME" ]] && exit 1
 
 [ -d "$EVM_DEST" ] || mkdir -p "$EVM_DEST" > /dev/null 2>&1 || evm_error "Failed to create $EVM_DEST"
 [ -z "$(which git)" ] && evm_error "Sorry guys. I can't find your git tool in your system.
