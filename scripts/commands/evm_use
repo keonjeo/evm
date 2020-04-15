@@ -14,8 +14,9 @@ __update_scripts_evm_for_evm_use() {
     done
 
     local source_line="export PATH=$PATH:$ERLANG_VERSIONS_LOCATION/$ERLANG_VERSION/bin"
-    grep -F "$source_line" "$1" > /dev/null 2>&1
+    grep -F "export PATH=" "$1" > /dev/null 2>&1
     if [ $? -ne 0 ]; then
+        sed -i '/export PATH=.*\/erlang_versions\/.*\/bin/d' "$1"
         echo -e "\n$source_line" >> "$1"
     fi
 }
