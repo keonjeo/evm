@@ -10,3 +10,11 @@ erlang_version () {
 	" && return 1)
 	command erl -eval '{ok, Version} = file:read_file(filename:join([code:root_dir(), "releases", erlang:system_info(otp_release), "OTP_VERSION"])), io:fwrite(Version), halt().' -noshell
 }
+
+erlang() {
+	if [[ $1 == "-v" ]] || [[ $1 == "-V" ]] || [[ $1 == "version" ]] || [[ $1 == "--version" ]]; then
+		erlang_version
+	else
+		command erl
+	fi
+}
