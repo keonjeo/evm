@@ -12,10 +12,15 @@ evm_use() {
             evm_dev_info "--------------------------"
             PATH="$(echo $PATH | sed -e "s,$directory/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
         done
-        # export PATH="$PATH:$ERLANG_VERSIONS_LOCATION/$ERLANG_VERSION/bin"
         [[ -s "$EVM_HOME/scripts/evm" ]] && echo "export PATH=$PATH:$ERLANG_VERSIONS_LOCATION/$ERLANG_VERSION/bin" >> "$EVM_HOME/scripts/evm"
         [[ -s "$EVM_HOME/scripts/evm" ]] && source "$EVM_HOME/scripts/evm"
-        evm_dev_info "PATH => $PATH"
+
+        evm_success_echo ""
+        evm_success_echo ""
+        evm_success_echo "   Please restart your terminal session, or to get started execute the following command to make it effective.  "
+        evm_success_echo ""
+        evm_success_echo "       source $EVM_HOME/scripts/evm      "
+        evm_success_echo ""
     else
         evm_warn "
 
