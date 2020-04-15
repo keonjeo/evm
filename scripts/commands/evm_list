@@ -63,6 +63,9 @@ function evm_list() {
             if [[ "$COLOR_SUPPORT" == "TRUE" ]]; then
                 ver="${LIGHT_GREEN}$ver${NO_COLOR}"
             fi
+        else
+            # Show not current and not default) as white
+            ver="   $ver"
         fi
         echo -e "$ver"
     done
