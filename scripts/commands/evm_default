@@ -6,16 +6,22 @@ evm_default() {
     local VERSION=$1
 
     if [[ -d $ERLANG_VERSIONS_LOCATION/$VERSION ]]; then
-        [[ ! -d $EVM_HOME/evm_config ]] && (evm_dev_info "
-        Counld not find $EVM_HOME/evm_config directory in your system.
-        evm will create this file automatically.
-        " && mkdir -p $EVM_HOME/evm_config
-        )
 
-        [[ -f $EVM_HOME/evm_config/erlang_default ]] && (evm_dev_info "
-        Counld not find $EVM_HOME/evm_config/erlang_default file in your system.
-        evm will create this file automatically.
-        ")
+        fi [[ ! -d $EVM_HOME/evm_config ]] ; then
+            evm_dev_info "
+            Counld not find $EVM_HOME/evm_config directory in your system.
+            evm will create this file automatically.
+            "
+            mkdir -p $EVM_HOME/evm_config
+        fi
+
+        if [[ ! -f $EVM_HOME/evm_config/erlang_default ]] ; then
+            evm_dev_info "
+            Counld not find $EVM_HOME/evm_config/erlang_default file in your system.
+            evm will create this file automatically.
+            "
+            touch $EVM_HOME/evm_config/erlang_default
+        fi
 
         echo "$VERSION" > $EVM_HOME/evm_config/erlang_default
         evm_dev_info "=== evm_use $VERSION ==="
