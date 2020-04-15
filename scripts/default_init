@@ -1,5 +1,6 @@
 [[ ! -d $EVM_ROOT/logs ]] && mkdir -p $EVM_ROOT/logs > /dev/null 2>&1
 
 export EVM_VERSION=$(cat "$EVM_ROOT/VERSION")
-
+export EVM_PATH_BACKUP="$PATH"
+export PATH="$PATH:$EVM_ROOT/bin"
 . "$EVM_ROOT/scripts/env/evm"
