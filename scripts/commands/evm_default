@@ -7,7 +7,7 @@ evm_default() {
 
     if [[ -d $ERLANG_VERSIONS_LOCATION/$VERSION ]]; then
 
-        fi [[ ! -d $EVM_HOME/evm_config ]] ; then
+        if [[ ! -d $EVM_HOME/evm_config ]] ; then
             evm_dev_info "
             Counld not find $EVM_HOME/evm_config directory in your system.
             evm will create this file automatically.
