@@ -17,7 +17,7 @@ evm_use() {
 
         evm_success_echo ""
         evm_success_echo ""
-        evm_success_echo "   Please restart your terminal session, or to get started execute the following command to make it effective.  "
+        evm_success_echo "Please restart your terminal session, or to get started execute the following command to make it effective."
         evm_success_echo ""
         evm_success_echo "       source $EVM_HOME/scripts/evm      "
         evm_success_echo ""
