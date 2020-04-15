@@ -26,8 +26,10 @@ function evm_list() {
 
     # Get the current versin in use from PATH
     if [[ "$system" == "Darwin" ]]; then
+        evm_dev_info "echo $PATH | egrep -o "$ERLANG_VERSIONS_LOCATION.*?/bin" | egrep -o "$FILE_PREFIX.*?/" | tr -d '/' | sed "s/$FILE_PREFIX//" | head -1"
         local version_in_use="$(echo $PATH | egrep -o "$ERLANG_VERSIONS_LOCATION.*?/bin" | egrep -o "$FILE_PREFIX.*?/" | tr -d '/' | sed "s/$FILE_PREFIX//" | head -1)"
     else
+        evm_dev_info "echo $PATH | grep -Po "$ERLANG_VERSIONS_LOCATION.*?/bin" | grep -Po "$FILE_PREFIX.*?/" | tr -d '/' | sed "s/$FILE_PREFIX//" | head -1"
         local version_in_use="$(echo $PATH | grep -Po "$ERLANG_VERSIONS_LOCATION.*?/bin" | grep -Po "$FILE_PREFIX.*?/" | tr -d '/' | sed "s/$FILE_PREFIX//" | head -1)"
     fi
 
