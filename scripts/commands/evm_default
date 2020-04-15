@@ -7,7 +7,7 @@ __update_scripts_evm_for_erlang_default() {
         return 1
     fi
 
-    local source_line ="[[ -s $EVM_HOME/evm_config/erlang_default ]] && version=\$(cat $EVM_HOME/evm_config/erlang_default) && evm use \$version"
+    local source_line="[[ -s $EVM_HOME/evm_config/erlang_default ]] && version=\$(cat $EVM_HOME/evm_config/erlang_default) && evm use \$version"
     grep -F "$source_line" "$1" > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo -e "# evm use erlang_default for new terminal session.\n$source_line" >> "$1"
