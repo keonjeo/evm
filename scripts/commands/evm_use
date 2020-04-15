@@ -1,18 +1,33 @@
 #!/usr/bin/env bash
 
+__update_scripts_evm_for_evm_use() {
+    if [[ ! -f "$1" ]]; then
+        evm_warn "Does not exist $EVM_HOME/scripts/evm file on your system"
+        return 1
+    fi
+
+    for directory in $ERLANG_VERSIONS_LOCATION/*; do
+        evm_dev_info "--------------------------"
+        evm_dev_info "directory => $directory"
+        evm_dev_info "--------------------------"
+        PATH="$(echo $PATH | sed -e "s,$directory/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
+    done
+
+    local source_line ="export PATH=$PATH:$ERLANG_VERSIONS_LOCATION/$ERLANG_VERSION/bin"
+    grep -F "$source_line" "$1" > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo -e "\n$source_line" >> "$1"
+    fi
+}
+
+
 # set this erlang version to be the one available in the PATH
 # @params: erlang_version, e.g. 22.3.2
 evm_use() {
     local ERLANG_VERSION=$1
 
     if [[ -d $ERLANG_VERSIONS_LOCATION/$ERLANG_VERSION ]]; then
-        for directory in $ERLANG_VERSIONS_LOCATION/*; do
-            evm_dev_info "--------------------------"
-            evm_dev_info "directory => $directory"
-            evm_dev_info "--------------------------"
-            PATH="$(echo $PATH | sed -e "s,$directory/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
-        done
-        [[ -s "$EVM_HOME/scripts/evm" ]] && echo "export PATH=$PATH:$ERLANG_VERSIONS_LOCATION/$ERLANG_VERSION/bin" >> "$EVM_HOME/scripts/evm"
+        __update_scripts_evm_for_evm_use "$EVM_HOME/scripts/evm"
 
         evm_success_echo ""
         evm_success_echo ""
