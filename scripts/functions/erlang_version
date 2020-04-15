@@ -3,12 +3,16 @@
 . $EVM_ROOT/scripts/functions/evm_printers
 
 erlang_version () {
-	[ -z "$(which erl)" ] && (evm_error "
+	if [[ -z "$(which erl)" ]]; then
+		evm_error "
 	Sorry guys. I can't find the erl command on your system.
 	
 	Please execute 'evm install [version]' to install your erlang on your system.
-	" && return 1)
-	command erl -eval '{ok, Version} = file:read_file(filename:join([code:root_dir(), "releases", erlang:system_info(otp_release), "OTP_VERSION"])), io:fwrite(Version), halt().' -noshell
+	"
+		return 1
+	else
+		command erl -eval '{ok, Version} = file:read_file(filename:join([code:root_dir(), "releases", erlang:system_info(otp_release), "OTP_VERSION"])), io:fwrite(Version), halt().' -noshell
+	fi
 }
 
 erlang() {
