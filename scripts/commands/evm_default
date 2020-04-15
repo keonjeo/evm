@@ -2,16 +2,16 @@
 
 
 __update_scripts_evm_for_erlang_default() {
-	if [[ -f "$1" ]]; then
+    if [[ ! -f "$1" ]]; then
         evm_warn "Does not exist $EVM_HOME/scripts/evm file on your system"
         return 1
     fi
 
-    local source_line ="[[ -s $EVM_HOME/evm_config/erlang_default ]] && version=$(cat $EVM_HOME/evm_config/erlang_default) && evm_use \$version"
-	grep -F "$source_line" "$1" > /dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		echo -e "# evm use erlang_default for new terminal session.\n$source_line" >> "$1"
-	fi
+    local source_line ="[[ -s $EVM_HOME/evm_config/erlang_default ]] && version=$(cat $EVM_HOME/evm_config/erlang_default) && evm use \$version"
+    grep -F "$source_line" "$1" > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo -e "# evm use erlang_default for new terminal session.\n$source_line" >> "$1"
+    fi
 }
 
 # set this erlang version as system default.
