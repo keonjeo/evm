@@ -16,9 +16,17 @@ __update_scripts_evm_for_evm_use() {
         PATH="$(echo $PATH | sed -e "s,$directory/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
 	done
 
-	local source_line="export PATH=$PATH:$ERLANG_VERSIONS_LOCATION/$VERSION/bin"
+	grep -F "export PATH=" $PATH > /dev/null 2>&1
+	while [[ $? -eq 0 ]]; do
+		PATH="$(echo $PATH | sed -e "s,$EVM_HOME/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
+		grep -F "$EVM_HOME/bin" $PATH > /dev/null 2>&1
+	done
 
-	echo "grep -F \"export PATH=\" $EVM_FILE > /dev/null 2>&1"
+	evm_dev_info "============== $PATH ================"
+
+	local source_line="export PATH=$PATH:$EVM_HOME/bin:$ERLANG_VERSIONS_LOCATION/$VERSION/bin"
+
+	evm_dev_info "grep -F \"export PATH=\" $EVM_FILE > /dev/null 2>&1"
 	grep -F "export PATH=" $EVM_FILE > /dev/null 2>&1
 
 	if [[ $? -eq 0 ]]; then
@@ -35,13 +43,13 @@ evm_use() {
     local VERSION=$1
 
     if [[ -d $ERLANG_VERSIONS_LOCATION/$VERSION ]]; then
-        __update_scripts_evm_for_evm_use "$EVM_HOME/scripts/evm" "$VERSION"
+        __update_scripts_evm_for_evm_use "$EVM_HOME/scripts/export_path" "$VERSION"
 
         evm_success_echo ""
         evm_success_echo ""
         evm_success_echo "Please restart your terminal session, or to get started execute the following command to make it effective."
         evm_success_echo ""
-        evm_success_echo "       source $EVM_HOME/scripts/evm      "
+        evm_success_echo "       source $EVM_HOME/scripts/export_path      "
         evm_success_echo ""
 	else
         evm_warn "
