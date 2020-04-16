@@ -37,7 +37,7 @@ evm_default() {
             touch $EVM_HOME/evm_config/erlang_default
         fi
 
-        __update_scripts_evm_for_erlang_default "$EVM_HOME/scripts/export_path"
+        __update_scripts_evm_for_erlang_default "$EVM_HOME/scripts/evm"
 
         echo "$VERSION" > $EVM_HOME/evm_config/erlang_default
         evm_dev_info "=== evm_use $VERSION ==="

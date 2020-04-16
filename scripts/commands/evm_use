@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
 __update_scripts_evm_for_evm_use() {
-	local EVM_FILE="$1"
+	local FILE="$1"
 	local VERSION="$2"
 
-	if [[ ! -f "$EVM_FILE" ]]; then
-        evm_warn "Does not exist $EVM_FILE file on your system"
-        return 1
-    fi
+	if [[ ! -f "$FILE" ]]; then
+		evm_warn "Does not exist $FILE file on your system"
+		return 1
+	fi
 
 	for directory in $ERLANG_VERSIONS_LOCATION/*; do
-        evm_dev_info "--------------------------"
-        evm_dev_info "directory => $directory"
-        evm_dev_info "--------------------------"
-        PATH="$(echo $PATH | sed -e "s,$directory/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
+		evm_dev_info "--------------------------"
+		evm_dev_info "directory => $directory"
+		evm_dev_info "--------------------------"
+		PATH="$(echo $PATH | sed -e "s,$directory/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
 	done
 
 	grep -F "export PATH=" $PATH > /dev/null 2>&1
@@ -26,14 +26,14 @@ __update_scripts_evm_for_evm_use() {
 
 	local source_line="export PATH=$PATH:$EVM_HOME/bin:$ERLANG_VERSIONS_LOCATION/$VERSION/bin"
 
-	evm_dev_info "grep -F \"export PATH=\" $EVM_FILE > /dev/null 2>&1"
-	grep -F "export PATH=" $EVM_FILE > /dev/null 2>&1
+	evm_dev_info "grep -F \"export PATH=\" $FILE > /dev/null 2>&1"
+	grep -F "export PATH=" $FILE > /dev/null 2>&1
 
 	if [[ $? -eq 0 ]]; then
-		sed -i '/export PATH=.*\/erlang_versions\/.*\/bin/d' $EVM_FILE
+		sed -i '/export PATH=.*\/erlang_versions\/.*\/bin/d' $FILE
 	fi
 
-	echo -e "\n$source_line" >> $EVM_FILE
+	echo -e "\n$source_line" >> $FILE
 }
 
 
@@ -41,6 +41,14 @@ __update_scripts_evm_for_evm_use() {
 # @params: erlang_version, e.g. 22.3.2
 evm_use() {
     local VERSION=$1
+
+	if [[ ! -f $EVM_HOME/scripts/export_path ]] ; then
+		evm_dev_info "
+		Counld not find $EVM_HOME/scripts/export_path file in your system.
+		evm will create this file automatically.
+		"
+		touch $EVM_HOME/scripts/export_path
+	fi
 
     if [[ -d $ERLANG_VERSIONS_LOCATION/$VERSION ]]; then
         __update_scripts_evm_for_evm_use "$EVM_HOME/scripts/export_path" "$VERSION"
