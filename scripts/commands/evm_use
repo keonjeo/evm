@@ -16,7 +16,7 @@ __update_scripts_evm_for_evm_use() {
 		PATH="$(echo $PATH | sed -e "s,$directory/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
 	done
 
-	grep -F "export PATH=" $PATH > /dev/null 2>&1
+	grep -F "$EVM_HOME/bin" $PATH > /dev/null 2>&1
 	while [[ $? -eq 0 ]]; do
 		PATH="$(echo $PATH | sed -e "s,$EVM_HOME/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
 		grep -F "$EVM_HOME/bin" $PATH > /dev/null 2>&1
