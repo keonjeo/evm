@@ -112,7 +112,7 @@ evm_install() {
     fi
 
     local result=$(check_dependence)
-    if [[ -n "$result" []]; then
+    if [[ -n "$result" ]]; then
         evm_fatal "$result"
     fi
 
