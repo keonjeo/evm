@@ -40,7 +40,7 @@ evm_list() {
             fi
 
         elif [[ "$ver" == "$default_version" ]]; then
-            ver="* $ver"
+            ver=" * $ver"
 
             # Show default (but not current) as 'yellow'
             if [[ "$COLOR_SUPPORT" == "TRUE" ]]; then
