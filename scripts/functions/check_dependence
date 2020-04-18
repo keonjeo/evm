@@ -21,7 +21,7 @@ check_dependence() {
 	# Check for libncures5-dev
 	dpkg -l | grep 'libncures5-dev' &> /dev/null || missing="${missing}libncures5-dev, "
 
-	if [[ -n "$missing" ]; then
+	if [[ -n "$missing" ]]; then
 		echo "Could not find ${missing}please install it on your system."
 	else
 		# All good!
