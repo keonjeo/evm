@@ -3,4 +3,18 @@
 export EVM_VERSION=$(cat "$EVM_ROOT/VERSION")
 export EVM_PATH_BACKUP="$PATH"
 export PATH="$PATH:$EVM_ROOT/bin:$ERLANG_ROOT/bin"
+
+# evm use erlang_default for new terminal session.
+if [[ -s $EVM_ROOT/evm_config/erlang_default ]]; then
+    default_version=$(cat $EVM_ROOT/evm_config/erlang_default)
+    if [[ -s $EVM_ROOT/evm_config/erlang_current ]]; then
+        current_version=$(cat $EVM_ROOT/evm_config/erlang_current)
+    fi
+
+    [[ "$current_version" != "" ]] && version=$current_version
+    [[ "$current_version" == "" ]] && version=$default_version
+
+    [[ -n $version ]] && evm use $version > /dev/null
+fi
+
 . "$EVM_ROOT/scripts/env/evm"

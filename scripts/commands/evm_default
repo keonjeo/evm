@@ -1,29 +1,5 @@
 #!/usr/bin/env bash
 
-
-__update_scripts_evm_for_erlang_default() {
-    if [[ ! -f "$1" ]]; then
-        evm_warn "Does not exist $EVM_HOME/scripts/evm file on your system"
-        return 1
-    fi
-
-    local source_line="if [[ -s $EVM_HOME/evm_config/erlang_default ]]; then
-    default_version=\$(cat $EVM_HOME/evm_config/erlang_default)
-    current_version=\$(cat $EVM_HOME/evm_config/erlang_current)
-    if [[ -n \$current_version ]]; then
-        version=\$current_version
-    else
-        version=\$default_version
-    fi
-
-    [[ -n \$version ]] && evm use \$version > /dev/null"
-
-    grep -F "$source_line" "$1" > /dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        echo -e "# evm use erlang_default for new terminal session.\n$source_line\n" >> "$1"
-    fi
-}
-
 # set this erlang version as system default.
 # @params: erlang_version, e.g. 22.3.2
 evm_default() {
@@ -46,8 +22,6 @@ evm_default() {
             "
             touch $EVM_HOME/evm_config/erlang_default
         fi
-
-        __update_scripts_evm_for_erlang_default "$EVM_HOME/scripts/evm"
 
         echo "$VERSION" > $EVM_HOME/evm_config/erlang_default
         evm_dev_info "=== evm_use $VERSION ==="
