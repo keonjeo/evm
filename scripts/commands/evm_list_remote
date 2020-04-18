@@ -11,8 +11,7 @@ fetch_available_erlang_versions() {
     AVAILABLE_ERLANG_VERSIONS=$(git ls-remote -t $ERLANG_REPOSITORY | awk -F/ '{ print $NF }' | awk -F"OTP_R" '{print $1}' | sort)
 
     if [[ $? -ne 0 ]]; then
-        evm_error "Failed to get version list from $ERLANG_REPOSITORY repository"
-        exit 1
+        evm_fatal "Failed to get version list from $ERLANG_REPOSITORY repository"
     fi
 }
 

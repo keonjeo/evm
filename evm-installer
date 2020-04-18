@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+evm_fatal() {
+	tput sgr0
+	tput setaf 1 # Red color
+    echo "[ERROR] $1" >&2
+	tput sgr0
+	exit 1
+}
+
 evm_error() {
 	tput sgr0
 	tput setaf 1 # Red color
@@ -102,14 +110,14 @@ SRC_REPO=${SRC_REPO:-https://github.com/keonjeo/evm.git}
 
 [[ -d "$EVM_DEST/$EVM_NAME" ]] && exit 1
 
-[ -d "$EVM_DEST" ] || mkdir -p "$EVM_DEST" > /dev/null 2>&1 || evm_error "Failed to create $EVM_DEST"
-[ -z "$(which git)" ] && evm_error "Sorry guys. I can't find your git tool in your system.
+[ -d "$EVM_DEST" ] || mkdir -p "$EVM_DEST" > /dev/null 2>&1 || evm_fatal "Failed to create $EVM_DEST"
+[ -z "$(which git)" ] && evm_fatal "Sorry guys. I can't find your git tool in your system.
         Debian / Ubuntu : sudo apt-get install git
         Redhat / Centos : sudo yum install git
                 Mac OSX : sudo brew install git
 "
 
-[ -z "$(which wget)" ] && evm_error "Sorry guys. I can't find your wget tool in your system.
+[ -z "$(which wget)" ] && evm_fatal "Sorry guys. I can't find your wget tool in your system.
         Debian / Ubuntu : sudo apt-get install wget
         Redhat / Centos : sudo yum install wget
                 Mac OSX : sudo brew install wget
@@ -121,7 +129,7 @@ if [[ -z "$GIT_ROOT" || "$(basename "$GIT_ROOT")" != "evm" ]];then
     echo "Cloning from $SRC_REPO to $EVM_DEST/$EVM_NAME"
 
     git clone --quiet "$SRC_REPO" "$EVM_DEST/$EVM_NAME" 2> /dev/null ||
-        evm_error "Failed to clone from $SRC_REPO into $EVM_DEST/$EVM_NAME"
+        evm_fatal "Failed to clone from $SRC_REPO into $EVM_DEST/$EVM_NAME"
 else
     # Generally speaking, it is impossible for users to reach this branch.
     # For developer to execute evm-installer script on the local.
@@ -138,7 +146,7 @@ fi
 
 pushd . > /dev/null
 cd "$EVM_DEST/$EVM_NAME" && git checkout --quiet "$BRANCH" 2> /dev/null
-[[ $? -ne 0 ]] && (evm_error "Failed to checkout $BRANCH branch" && exit 1)
+[[ $? -ne 0 ]] && (evm_fatal "Failed to checkout $BRANCH branch")
 popd > /dev/null
 
 # backup .git directory if exosts .git directory

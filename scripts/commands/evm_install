@@ -60,7 +60,10 @@ complie_source_code_and_install_erlang() {
     make && make install 
     # make && make install 1> "/tmp/install_erlang_$VERSION.log" 2>&1
 
-    [[ $? != 0 ]] && evm_error "Fail to compile the erlang source code." && exit 1
+    if [[ $? != 0 ]]; then
+        evm_error "Fail to compile the erlang source code."
+        return 1
+    fi
 
     [[ ! -n "$EVM_DEV" ]] && rm -rf $ERLANG_TARS_LOCATION/$ERLANG_VERSION_ZIP_FILE
     cd -
@@ -108,6 +111,11 @@ evm_install() {
         exit 1
     fi
 
+    local result=$(check_dependence)
+    if [[ -n "$result" []]; then
+        evm_fatal "$result"
+    fi
+
     local VERSION="$1"
     local DONT_ASK="$(echo $2 | sed 's/-//')"
 
@@ -124,12 +132,12 @@ evm_install() {
 
     do_you_want_to_continue_to_install $DONT_ASK
 
-    [[ -z $NOT_COMPLIE_SOURCE_CODE ]] && (complie_source_code_and_install_erlang || evm_error "Fail to complie source code" && exit 1)
-    [[ -z $NOT_COMPLIE_SOURCE_CODE ]] && (create_lib_links_into_erlang_bin_path || evm_error "Fail to create lib links" && exit 1)
+    [[ -z $NOT_COMPLIE_SOURCE_CODE ]] && (complie_source_code_and_install_erlang || evm_fatal "Fail to complie source code")
+    [[ -z $NOT_COMPLIE_SOURCE_CODE ]] && (create_lib_links_into_erlang_bin_path || evm_fatal "Fail to create lib links")
 
     # Just only for development for evm project
     if [[ -n $NOT_COMPLIE_SOURCE_CODE ]]; then
-        [[ ! -d ~/.evm_erlang_versions.back ]] && evm_error "~/.evm_erlang_versions.back does NOT exist on your home directory." && exit 1
+        [[ ! -d ~/.evm_erlang_versions.back ]] && evm_fatal "~/.evm_erlang_versions.back does NOT exist on your home directory."
         [[ -d ~/.evm/erlang_versions ]] && evm_dev_info "trying to remove ~/.evm/erlang_versions directory" && rm -rf ~/.evm/erlang_versions
         evm_dev_info "copy ~/.evm_erlang_versions.back directory to ~/.evm/erlang_versions directory" && cp -rp ~/.evm_erlang_versions.back ~/.evm/erlang_versions
     fi

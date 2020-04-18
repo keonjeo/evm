@@ -13,13 +13,6 @@ if [ -z "$EVM_ROOT" ]; then
     exit 1
 fi
 
-# # Check the prerequisites for the evm installation
-# "$EVM_ROOT/scripts/evm_check"
-
-# if [[ "$?" != "0" ]]; then
-#   evm_fatal "Missing requirements."
-# fi
-
 command="$1"
 [[ $command == "" ]] && evm_help
 [[ $command == "" ]] && exit 0
@@ -42,6 +35,5 @@ if [[ -f "$EVM_ROOT/scripts/commands/evm_$command" ]] ; then
         exit $?
     fi
 else
-    evm_error "Unrecognized command line argument: '$command'"
-    exit 1
+    evm_fatal "Unrecognized command line argument: '$command'"
 fi

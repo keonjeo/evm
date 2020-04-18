@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # show a list of all installed version in the evm space
-function evm_list() {
+evm_list() {
     ## Colors
     local LIGHT_GREEN="\e[1;32m"
     local LIGHT_CYAN="\e[1;36m"

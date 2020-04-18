@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function evm_help() {
+evm_help() {
     evm_echo "
 
 Usage: evm [command]

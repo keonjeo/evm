@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # receive the version name to be downloaded. 
-function evm_download() {
+evm_download() {
     local VERSION="$1"
     local ERLANG_VERSION_ZIP_FILE=$FILE_PREFIX-$VERSION.$FILE_EXTENSION
 
@@ -21,11 +21,12 @@ function evm_download() {
 
         fetch_available_erlang_versions
         evm_dev_info "AVAILABLE_ERLANG_VERSIONS => $AVAILABLE_ERLANG_VERSIONS "
-        [ -z "$AVAILABLE_ERLANG_VERSIONS" ] && evm_error "Failed to fetch available Erlang versions" && exit 1
+        if [[ -z "$AVAILABLE_ERLANG_VERSIONS" ]]; then
+            evm_fatal "Failed to fetch available Erlang versions"
+        fi
         
         if [[ -z $(echo "$AVAILABLE_ERLANG_VERSIONS" | grep "$1") ]]; then
-            evm_warn "Erlang v$VERSION is not available at $ERLANG_DOWNLOAD_URL"
-            exit 1
+            evm_fatal "Erlang v$VERSION is not available at $ERLANG_DOWNLOAD_URL"
         else
             evm_dev_info "wget --progress=bar -P $ERLANG_TARS_LOCATION $ERLANG_DOWNLOAD_URL/$ERLANG_VERSION_ZIP_FILE"
             wget --progress=bar -P $ERLANG_TARS_LOCATION $ERLANG_DOWNLOAD_URL/$ERLANG_VERSION_ZIP_FILE
