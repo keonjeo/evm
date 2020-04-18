@@ -8,9 +8,9 @@ __update_scripts_evm_for_erlang_default() {
     fi
 
     local source_line="if [[ -s $EVM_HOME/evm_config/erlang_default ]]; then
-    local version=\"\"
-    local default_version=\$(cat $EVM_HOME/evm_config/erlang_default)
-    local current_version=\$(cat $EVM_HOME/evm_config/erlang_current)
+    version=\"\"
+    default_version=\$(cat $EVM_HOME/evm_config/erlang_default)
+    current_version=\$(cat $EVM_HOME/evm_config/erlang_current)
     if [[ -n \$current_version ]]; then
         version=\$current_version
     else
