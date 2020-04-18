@@ -15,6 +15,10 @@ __update_erlang_bin_soft_link() {
 		PATH="$(echo $PATH | sed -e "s,$directory/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
 	done
 
+	if [[ -d $ERLANG_ROOT/bin ]]; then
+		rm -rf $ERLANG_ROOT/bin
+	fi
+
 	evm_dev_info "ln -s $ERLANG_VERSIONS_LOCATION/$VERSION/bin/ $ERLANG_ROOT/"
 	ln -s $ERLANG_VERSIONS_LOCATION/$VERSION/bin/ $ERLANG_ROOT/
 }
