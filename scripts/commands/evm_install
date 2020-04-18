@@ -32,6 +32,8 @@ configure_erlang_source_code() {
 
 do_you_want_to_continue_to_install() {
     local cont="y"
+    local DONT_ASK="$1"
+    evm_dev_info "DONT_ASK => $DONT_ASK"
     [[ "$DONT_ASK" != "Y" && "$DONT_ASK" != "y" ]] && echo "" && evm_message "Continue with installation?(y/n)" && read cont
 
     if [[ "$cont" != "Y" && "$cont" != "y" ]]; then
@@ -107,6 +109,7 @@ evm_install() {
     fi
 
     local VERSION="$1"
+    local DONT_ASK="$(echo $2 | sed 's/-//')"
 
     evm_download $VERSION
 
@@ -119,7 +122,7 @@ evm_install() {
 
     [[ -z $NOT_CONFIGURE_ERLANG_SOURCE_CODE ]] && configure_erlang_source_code
 
-    do_you_want_to_continue_to_install
+    do_you_want_to_continue_to_install $DONT_ASK
 
     [[ -z $NOT_COMPLIE_SOURCE_CODE ]] && (complie_source_code_and_install_erlang || evm_error "Fail to complie source code" && exit 1)
     [[ -z $NOT_COMPLIE_SOURCE_CODE ]] && (create_lib_links_into_erlang_bin_path || evm_error "Fail to create lib links" && exit 1)
