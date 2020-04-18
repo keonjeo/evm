@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-__update_scripts_evm_for_evm_use() {
+__update_erlang_bin_soft_link() {
 	local VERSION="$1"
 
 	if [[ "$VERSION" == "" ]]; then
