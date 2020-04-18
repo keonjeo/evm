@@ -14,20 +14,13 @@ evm_uninstall() {
     evm_message "Uninstalling $VERSION..."
     rm -rf $ERLANG_VERSIONS_LOCATION/$VERSION
 
-    if [[ $? -eq 0 ]]; then
-        if [[ "$default_version" == "$VERSION" ]]; then
-            if [[ -L $ERLANG_ROOT/bin ]]; then
-                rm -rf $ERLANG_ROOT/bin
-            fi
-            echo "" > $EVM_HOME/evm_config/erlang_default
+    [[ "$default_version" == "$VERSION" ]] && echo "" > $EVM_HOME/evm_config/erlang_default
+    if [[ "$current_version" == "$VERSION" ]]; then
+        if [[ -L $ERLANG_ROOT/bin ]]; then
+            rm -rf $ERLANG_ROOT/bin
         fi
-
-        if [[ "$current_version" == "$VERSION" ]]; then
-            if [[ -L $ERLANG_ROOT/bin ]]; then
-                rm -rf $ERLANG_ROOT/bin
-            fi
-            echo "" > $EVM_HOME/evm_config/erlang_current
-        fi
+        echo "" > $EVM_HOME/evm_config/erlang_current
     fi
+
     evm_message "Erlang version $VERSION has been uninstalled successfully"
 }
