@@ -23,7 +23,6 @@ evm_list() {
     # Get the default version
     local default_version="$(cat $EVM_HOME/evm_config/erlang_default)"
     local current_version="$(cat $EVM_HOME/evm_config/erlang_current)"
-    local system="$(uname -s)"
 
     ## Do that inside a subshell to not alter the user settings
     (

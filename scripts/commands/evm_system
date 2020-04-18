@@ -3,10 +3,7 @@
 # remove alter the PATH variable, leaving only the system version of ERLANG available.
 evm_system() {
     ## use sed "s,<pattern>,<replacement>" To remove any reference of erlang, duplicated ::,: from the beginning and from the end of path
-    for directory in $ERLANG_VERSIONS_LOCATION/*; do
-        echo "directory => $directory"
-        PATH="$(echo $PATH | sed -e "s,$directory/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
-    done
+    PATH="$(echo $PATH | sed -e "s,$ERLANG_ROOT/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
     export PATH
     evm_dev_info "PATH => $PATH"
 }

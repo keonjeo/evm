@@ -4,6 +4,23 @@
 
 erlang_version () {
 	if [[ -z "$(which erl)" ]]; then
+
+		local result=$(ls ~/.evm/erlang_versions)
+		if [[ -n "$result" ]]; then
+			evm_message ""
+			evm_message "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+			evm_message "%                                               %"
+			evm_message "%            =* : current and default           %"
+			evm_message "%            => : current                       %"
+			evm_message "%             * : default                       %"
+			evm_message "%                                               %"
+			evm_message "%   use 'evm use [version]' to switch version   %"
+			evm_message "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+			evm_message ""
+			evm_message ""
+			return 1
+		fi
+
 		evm_error "
 	Sorry guys. I can't find the erl command on your system.
 	
