@@ -22,16 +22,8 @@ function evm_list() {
 
     # Get the default version
     local default_version="$(cat $EVM_HOME/evm_config/erlang_default)"
+    local current_version="$(cat $EVM_HOME/evm_config/erlang_current)"
     local system="$(uname -s)"
-
-    # Get the current versin in use from PATH
-    if [[ "$system" == "Darwin" ]]; then
-        evm_dev_info "echo $PATH | egrep -o "$ERLANG_VERSIONS_LOCATION.*?/bin" | awk -F'erlang_versions/' '{print \$2}' | awk -F'/bin' '{print \$1}' | head -1"
-        local version_in_use="$(echo $PATH | egrep -o "$ERLANG_VERSIONS_LOCATION.*?/bin" | awk -F'erlang_versions/' '{print $2}' | awk -F'/bin' '{print $1}' | head -1)"
-    else
-        evm_dev_info "echo $PATH | grep -Po "$ERLANG_VERSIONS_LOCATION.*?/bin" | awk -F'erlang_versions/' '{print \$2}' | awk -F'/bin' '{print \$1}'| head -1"
-        local version_in_use="$(echo $PATH | grep -Po "$ERLANG_VERSIONS_LOCATION.*?/bin" | awk -F'erlang_versions/' '{print $2}' | awk -F'/bin' '{print $1}' | head -1)"
-    fi
 
     ## Do that inside a subshell to not alter the user settings
     (
@@ -40,7 +32,7 @@ function evm_list() {
         local ver="${directory}"
 
         # Apply symbols and colors
-        if [[ "$ver" == "$default_version" && "$ver" == "$version_in_use" ]]; then
+        if [[ "$ver" == "$default_version" && "$ver" == "$current_version" ]]; then
             ver="=* $ver"
 
             # Show default and current as 'green'
@@ -56,7 +48,7 @@ function evm_list() {
                 ver="${DARK_YELLOW}$ver${NO_COLOR}"
             fi
 
-        elif [[ "$ver" == "$version_in_use" ]]; then
+        elif [[ "$ver" == "$current_version" ]]; then
             ver="=> $ver"
 
             # Show current (but not default) as cyan

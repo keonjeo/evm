@@ -155,6 +155,10 @@ popd > /dev/null
 touch $EVM_DEST/$EVM_NAME/evm_config/erlang_default
 evm_dev_info "$EVM_DEST/$EVM_NAME/evm_config/erlang_default succesfully created"
 
+[[ -f $EVM_DEST/$EVM_NAME/evm_config/erlang_current ]] && rm -f $EVM_DEST/$EVM_NAME/evm_config/erlang_current
+touch $EVM_DEST/$EVM_NAME/evm_config/erlang_current
+evm_dev_info "$EVM_DEST/$EVM_NAME/evm_config/erlang_current succesfully created"
+
 source_line="[[ -s \"${EVM_DEST}/$EVM_NAME/scripts/evm\" ]] && source \"${EVM_DEST}/$EVM_NAME/scripts/evm\""
 source_file="${EVM_DEST}/$EVM_NAME/scripts/evm"
 

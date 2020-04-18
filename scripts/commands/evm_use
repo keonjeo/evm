@@ -21,6 +21,24 @@ __update_erlang_bin_soft_link() {
 
 	evm_dev_info "ln -s $ERLANG_VERSIONS_LOCATION/$VERSION/bin/ $ERLANG_ROOT/"
 	ln -s $ERLANG_VERSIONS_LOCATION/$VERSION/bin/ $ERLANG_ROOT/
+
+	if [[ ! -d $EVM_HOME/evm_config ]] ; then
+		evm_dev_info "
+		Counld not find $EVM_HOME/evm_config directory in your system.
+		evm will create this file automatically.
+		"
+		mkdir -p $EVM_HOME/evm_config
+	fi
+
+	if [[ ! -f $EVM_HOME/evm_config/erlang_current ]] ; then
+		evm_dev_info "
+		Counld not find $EVM_HOME/evm_config/erlang_current file in your system.
+		evm will create this file automatically.
+		"
+		touch $EVM_HOME/evm_config/erlang_current
+	fi
+
+	echo "$VERSION" > $EVM_HOME/evm_config/erlang_current
 }
 
 
