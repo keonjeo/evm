@@ -2,5 +2,5 @@
 
 export EVM_VERSION=$(cat "$EVM_ROOT/VERSION")
 export EVM_PATH_BACKUP="$PATH"
-export PATH="$PATH:$EVM_ROOT/bin"
+export PATH="$PATH:$EVM_ROOT/bin:$ERLANG_ROOT/bin"
 . "$EVM_ROOT/scripts/env/evm"

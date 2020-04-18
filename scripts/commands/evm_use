@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
 __update_scripts_evm_for_evm_use() {
-	local FILE="$1"
-	local VERSION="$2"
+	local VERSION="$1"
 
-	if [[ ! -f "$FILE" ]]; then
-		evm_warn "Does not exist $FILE file on your system"
+	if [[ "$VERSION" == "" ]]; then
+		evm_warn "VERSION should NOT be an empty string"
 		return 1
 	fi
 
@@ -16,24 +15,8 @@ __update_scripts_evm_for_evm_use() {
 		PATH="$(echo $PATH | sed -e "s,$directory/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
 	done
 
-	grep -F "$EVM_HOME/bin" $PATH > /dev/null 2>&1
-	while [[ $? -eq 0 ]]; do
-		PATH="$(echo $PATH | sed -e "s,$EVM_HOME/bin,,g ; s,^:,, ; s,::,:,g ; s,:$,,")"
-		grep -F "$EVM_HOME/bin" $PATH > /dev/null 2>&1
-	done
-
-	evm_dev_info "============== $PATH ================"
-
-	local source_line="export PATH=$PATH:$EVM_HOME/bin:$ERLANG_VERSIONS_LOCATION/$VERSION/bin"
-
-	evm_dev_info "grep -F \"export PATH=\" $FILE > /dev/null 2>&1"
-	grep -F "export PATH=" $FILE > /dev/null 2>&1
-
-	if [[ $? -eq 0 ]]; then
-		sed -i '/export PATH=.*\/erlang_versions\/.*\/bin/d' $FILE
-	fi
-
-	echo -e "\n$source_line" >> $FILE
+	evm_dev_info "ln -s $ERLANG_VERSIONS_LOCATION/$VERSION/bin/ $ERLANG_ROOT/"
+	ln -s $ERLANG_VERSIONS_LOCATION/$VERSION/bin/ $ERLANG_ROOT/
 }
 
 
@@ -42,23 +25,8 @@ __update_scripts_evm_for_evm_use() {
 evm_use() {
     local VERSION=$1
 
-	if [[ ! -f $EVM_HOME/scripts/export_path ]] ; then
-		evm_dev_info "
-		Counld not find $EVM_HOME/scripts/export_path file in your system.
-		evm will create this file automatically.
-		"
-		touch $EVM_HOME/scripts/export_path
-	fi
-
     if [[ -d $ERLANG_VERSIONS_LOCATION/$VERSION ]]; then
-        __update_scripts_evm_for_evm_use "$EVM_HOME/scripts/export_path" "$VERSION"
-
-        evm_success_echo ""
-        evm_success_echo ""
-        evm_success_echo "Please restart your terminal session, or to get started execute the following command to make it effective."
-        evm_success_echo ""
-        evm_success_echo "       source $EVM_HOME/scripts/export_path      "
-        evm_success_echo ""
+        __update_erlang_bin_soft_link "$VERSION"
 	else
         evm_warn "
 
